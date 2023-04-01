@@ -1,0 +1,29 @@
+# This is a basic workflow that is manually triggered
+
+name: Manual workflow
+
+name: Create S3 Bucket
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  create-bucket:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Assume AWS Role
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        role-to-assume:  arn:aws:iam::468413151881:role/github-actions-role #replace with the ARN of the role you want to assume
+        aws-region: us-west-2 # replace with the region where your S3 bucket will be created
+        role-duration-seconds: 900 # replace with the duration of the assumed role in seconds (max is 3600)
+
+    - name: Create S3 Bucket
+      run: |
+        aws s3api create-bucket --bucket delly92bucket92 --region us-west-2 --create-bucket-configuration LocationConstraint=us-west-2
